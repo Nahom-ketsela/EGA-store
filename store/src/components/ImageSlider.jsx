@@ -1,69 +1,53 @@
-import React, { useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import Uno from '@/assets/uno.jpg';
-import Chess from '@/assets/chess.jpg';
-import Cards from '@/assets/cards.jpg';
-import CartIcon from '@/assets/Cart.png'; // Import the cart icon image
+import jegena2 from '@/assets/jegena2.png';
+import cards from '@/assets/cards.jpg';
+import pool from '@/assets/pool.png';
 
 function ImageSlider() {
-  const [positionIndexes, setPositionIndexes] = useState([0, 1, 2]);
+    const images = [
+        { img: jegena2 },
+        { img: cards },
+        { img: pool },
+        { img: jegena2 },
+        { img: cards },
+    ];
 
-  const handleNext = () => {
-    setPositionIndexes((prevIndexes) => {
-      const updatedIndexes = prevIndexes.map((prevIndex) => (prevIndex + 1) % 3);
-      return updatedIndexes;
-    });
-  };
+    const boxRef = useRef(null);
+    const [dragWidth, setDragWidth] = useState(0);
 
-  const images = [
-    { src: Uno, alt: 'Uno', text: 'Uno', price: '150 Birr' },
-    { src: Chess, alt: 'Chess', text: 'Chess', price: '200 Birr' },
-    { src: Cards, alt: 'Cards', text: 'Cards', price: '100 Birr' },
-  ];
+    useEffect(() => {
+        if (boxRef.current) {
+            // Calculate the total width that can be dragged
+            const totalWidth = boxRef.current.scrollWidth - boxRef.current.offsetWidth;
+            setDragWidth(totalWidth);
+        }
+    }, []);
 
-  const positions = ['center', 'left', 'right'];
-
-  const imageVariants = {
-    center: { x: '0%', scale: 1, zIndex: 3 },
-    left: { x: '-50%', scale: 0.5, zIndex: 0 },
-    right: { x: '50%', scale: 0.5, zIndex: 1 },
-  };
-
-  return (
-    <div className='flex items-center flex-col h-screen'>
-      {images.map((image, index) => (
-        <motion.div
-          key={index}
-          className="w-[40%] h-auto"
-          initial="center"
-          animate={positions[positionIndexes[index]]}
-          variants={imageVariants}
-          transition={{ duration:1}}
-          style={{ position: 'absolute' }}
-          onMouseEnter={handleNext} // Trigger the next image on hover
+    return (
+        <div
+            className="relative h-64 p-2 border border-black flex w-3/4 mx-auto overflow-hidden"
+            ref={boxRef}
         >
-          <motion.img
-            src={image.src}
-            alt={image.alt}
-            className="rounded-[12px] w-full h-auto object-cover"
-          />
-          <div className="absolute inset-0 flex flex-col justify-end p-4 bg-black bg-opacity-50 rounded-b-[12px] text-white">
-            <h3 className="text-xl mb-2">{image.text}</h3>
-            <p className="text-sm mb-4">{image.price}</p> {/* Display price */}
-            <div className="flex gap-2">
-              <button className="bg-green-500 px-4 py-2 rounded-md flex items-center">
-                <img src={CartIcon} alt="Cart" className="w-5 h-5 mr-2" />
-                Purchase Now
-              </button>
-              <button className="bg-slate-500 bg-opacity-60 px-4 py-2 rounded-md">
-                Add to Wishlist
-              </button>
-            </div>
-          </div>
-        </motion.div>
-      ))}
-    </div>
-  );
+            <motion.div
+                className="flex gap-4"
+                drag="x"
+                dragConstraints={{ right: 0, left: -dragWidth }} // Drag constraints to prevent excessive dragging
+                initial={{ x: 0 }} // Start at the leftmost position
+                whileTap={{ cursor: 'grabbing' }} // Change cursor when dragging
+            >
+                {images.map((image, index) => (
+                    <motion.div
+                        key={index}
+                        className="min-w-[300px] h-full bg-cover bg-center"
+                        style={{
+                            backgroundImage: `url(${image.img})`,
+                        }}
+                    />
+                ))}
+            </motion.div>
+        </div>
+    );
 }
 
 export default ImageSlider;

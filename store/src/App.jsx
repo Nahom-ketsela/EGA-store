@@ -2,9 +2,10 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
 import Filter from './pages/Filter';
-import Contact from './pages/Contact'; // Fixed capitalization
-import Games from './pages/Games'; // Import the Games component
-import Cart from './pages/Cart'; // Import the Cart component
+import Contact from './pages/Contact';
+import Games from './pages/Games';
+import Cart from './pages/Cart';
+import PaymentPage from './pages/PaymentPage';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 
@@ -21,6 +22,8 @@ function App() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/games/:gameName" element={<Games />} />
             <Route path="/cart" element={<Cart />} />
+            <Route path="/checkout" element={<PaymentPage />} />
+
           </Routes>
         </div>
         <Footer />

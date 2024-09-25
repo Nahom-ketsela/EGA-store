@@ -1,179 +1,164 @@
 import React, { useState } from 'react';
-import unoImage from '@/assets/uno.jpg'; // Update the path to your actual image path
-import jegenaImage from '@/assets/jegena2.png'; // Update the path to your actual image path
-import cardImage from '@/assets/cards.jpg'; // Update the path to your actual image path
+import { Link } from 'react-router-dom';
+import jegena2 from '@/assets/jegena2.png';
+import cards from '@/assets/cards.jpg';
+import pool from '@/assets/pool.png';
+import cart from '@/assets/cart.jpg';
 
-function Cart() {
-  // State to manage quantity for each item
-  const [quantityUno, setQuantityUno] = useState(1);
-  const [quantityJegena, setQuantityJegena] = useState(1);
-  const [quantityCard, setQuantityCard] = useState(1);
+const Cart = () => {
+  const [cartItems, setCartItems] = useState([
+    { id: 1, name: 'Uno', price: 300, qty: 1, age: '13+', image: cards },
+    { id: 2, name: 'Jenga', price: 500, qty: 2, age: '13+', image: jegena2 },
+    { id: 3, name: 'Chess', price: 1000, qty: 1, age: '13+', image: pool },
+  ]);
 
-  // Handler functions to update quantity
-  const increaseQuantity = (setQuantity) => {
-    setQuantity(prevQuantity => prevQuantity + 1);
+  const updateQuantity = (id, value) => {
+    setCartItems(
+      cartItems.map(item =>
+        item.id === id ? { ...item, qty: Math.max(1, item.qty + value) } : item
+      )
+    );
   };
 
-  const decreaseQuantity = (setQuantity) => {
-    setQuantity(prevQuantity => (prevQuantity > 1 ? prevQuantity - 1 : 1));
+  const removeItem = (id) => {
+    setCartItems(cartItems.filter(item => item.id !== id));
   };
+
+  const totalAmount = cartItems.reduce((total, item) => total + item.price * item.qty, 0);
+
+
 
   return (
-    <div className="flex p-4 bg-gray-800">
-      {/* Main content container with padding and space from start */}
-      <div className="flex flex-col space-y-4 w-full max-w-3xl mr-6 pl-12 pr-4">
-        {/* Heading */}
-        <div className="text-5xl text-white mb-4">My Cart</div>
+    <div className="min-h-screen bg-neutral-800 text-white mx-16 my-2 mb-10">
+      <h1 className="text-3xl font-semibold mb-6">My Cart</h1>
 
-        {/* Container for Each Item */}
-        <div className="flex items-start space-x-4 border-2 border-white p-4 rounded-lg bg-gray-800">
-          <img src={unoImage} alt="Uno" className="w-32 h-32 object-cover rounded-lg" />
-          
-          <div className="flex flex-col justify-between ml-4 space-y-2">
-            <div className="text-white text-xl">Uno</div>
-            <div className="flex flex-col">
-              <div className="text-white text-xl">Table Tap Game</div>
-              <div className="flex items-center space-x-2 mt-2">
-                <span className="text-white text-xl">13+</span>
-                <span className="text-white text-xl">199</span>
-                <span className="text-white text-xl">Birr</span>
+      {/* Check if the cart is empty */}
+      {cartItems.length === 0 ? (
+        <div className="flex flex-col items-center justify-center">
+          <img className="w-48"
+            src={cart}
+          />
+          <h2 className="text-xl font-semibold mb-2">Your cart is empty</h2>
+          <p className="text-gray-400 mb-4">Checkout what is trending.</p>
+          <Link to="/filter">
+            <button
+              className="bg-green-600 px-6 py-2 rounded-3xl text-white"
+            >
+              Add Items to Cart
+            </button>
+          </Link>
+
+        </div>
+      ) : (
+        <div className="flex gap-6">
+          {/* Left Side: Cart Items */}
+          <div className="w-2/5 ml-10"> {/* Decreased the width of the container */}
+            {cartItems.map(item => (
+              <div key={item.id} className="flex items-center bg-neutral-800 p-4 rounded-md border border-white mb-4 shadow-md">
+                <img src={item.image} alt={item.name} className="w-20 h-20 object-cover rounded-lg" />
+                <div className="ml-4 w-full">
+                  <h3 className="text-xl font-semibold">{item.name}</h3>
+                  <p className="text-gray-400">Table top game</p>
+                  <p className="text-gray-400">Age {item.age}</p>
+                  <p className="font-bold mt-8"> {item.price} Birr</p>
+                </div>
+
+                <div className="flex flex-col justify-between items-end h-full space-y-4">
+                  {/* Quantity Controls at the top */}
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={() => updateQuantity(item.id, -1)}
+                      disabled={item.qty <= 1}
+                      className="bg-green-600 p-1.5 rounded-sm disabled:opacity-50"
+                    >
+                      -
+                    </button>
+                    <span className="text-lg">{item.qty}</span>
+                    <button
+                      onClick={() => updateQuantity(item.id, 1)}
+                      className="bg-green-600 p-1.5 rounded-sm"
+                    >
+                      +
+                    </button>
+                  </div>
+
+                  {/* Wishlist and Delete Buttons at the bottom */}
+                  <div className="flex items-center space-x-2 mt-5">
+                    <button className="border-white text-sm p-2 w-40 rounded-lg mt-8">
+                      <i className="fa-regular fa-heart"></i> Move to Wishlist
+                    </button>
+                    <button
+                      onClick={() => removeItem(item.id)}
+                      className="mt-8"
+                    >
+                      <i className="fa-solid fa-trash"></i>
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div className="flex items-center space-x-2 mt-4">
-              <button
-                onClick={() => decreaseQuantity(setQuantityUno)}
-                className="bg-gray-700 text-white px-2 py-1 rounded"
-              >
-                -
-              </button>
-              <span className="text-white text-xl">{quantityUno}</span>
-              <button
-                onClick={() => increaseQuantity(setQuantityUno)}
-                className="bg-gray-700 text-white px-2 py-1 rounded"
-              >
-                +
-              </button>
-            </div>
+            ))}
           </div>
 
-          <div className="flex flex-col items-end ml-auto space-y-2">
-            <button className="bg-gray-700 text-white border-2 border-green-500 px-4 py-2 rounded flex items-center space-x-2">
-              <span>Move to Wishlist</span>
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-              </svg>
-            </button>
-            <button className="bg-gray-700 text-white border-2 border-red-500 px-4 py-2 rounded flex items-center space-x-2">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-              <span>Delete</span>
-            </button>
+          {/* Right Side: Order Summary */}
+          <div className="w-full md:w-1/3 bg-green-600  border-white p-6 rounded-3xl shadow-md ml-0 md:ml-10">
+            <h2 className="text-2xl font-semibold mb-4 text-white">Order Summary</h2>
+            <hr className="border-white my-4" />
+            {cartItems.map(item => (
+              <div
+                key={item.id}
+                className="flex justify-between items-center bg-neutral-400 p-4 rounded-lg mb-4 text-white"
+              >
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="w-12 h-12 object-cover rounded-lg"
+                />
+                <div className="ml-4">
+                  <p className="font-semibold">{item.name}</p>
+                  <p className="text-gray-300 text-sm">Qty: {item.qty}</p>
+                </div>
+                <span className="font-semibold">{item.price * item.qty} Birr</span>
+              </div>
+            ))}
+
+            <div className="my-4">
+              <input
+                type="text"
+                placeholder="Gift or discount code"
+                className="w-2/3 p-2 bg-neutral-700 rounded-md text-gray-300 placeholder-gray-400 mr-4"
+              />
+              <button className="mt-2 bg-neutral-800 w-1/4 py-2 rounded-md text-white">
+                Apply
+              </button>
+            </div>
+
+            <hr className="border-white my-4" />
+
+            <div className="flex justify-between items-center text-sm  text-white">
+              <span>Subtotal</span>
+              <span>{totalAmount} Birr</span>
+            </div>
+
+            <div className="flex justify-between items-center text-2xl font-bold text-white">
+              <span>Total</span>
+              <span>{totalAmount + (0.05 * totalAmount)} Birr</span>
+            </div>
+            <div className=" text-gray-400 text-sm mt-2">
+              Including taxes of 5%
+            </div>
+            <Link to="/checkout">
+              <button className="mt-6 bg-green-900 w-full  py-3 rounded-lg text-white text-xl font-bold flex items-center justify-center">
+                <span className="mr-10">${totalAmount + (0.05 * totalAmount)}</span>
+                Checkout
+                <span className="ml-2">→</span>
+              </button>
+            </Link>
+
           </div>
         </div>
-
-        {/* Repeat the structure for other items with different states */}
-        <div className="flex items-start space-x-4 border-2 border-white p-4 rounded-lg bg-gray-800">
-          <img src={jegenaImage} alt="Jegena" className="w-32 h-32 object-cover rounded-lg" />
-          
-          <div className="flex flex-col justify-between ml-4 space-y-2">
-            <div className="text-white text-xl">Jegena</div>
-            <div className="flex flex-col">
-              <div className="text-white text-xl">Table Tap Game</div>
-              <div className="flex items-center space-x-2 mt-2">
-                <span className="text-white text-xl">13+</span>
-                <span className="text-white text-xl">199</span>
-                <span className="text-white text-xl">Birr</span>
-              </div>
-            </div>
-            <div className="flex items-center space-x-2 mt-4">
-              <button
-                onClick={() => decreaseQuantity(setQuantityJegena)}
-                className="bg-gray-700 text-white px-2 py-1 rounded"
-              >
-                -
-              </button>
-              <span className="text-white text-xl">{quantityJegena}</span>
-              <button
-                onClick={() => increaseQuantity(setQuantityJegena)}
-                className="bg-gray-700 text-white px-2 py-1 rounded"
-              >
-                +
-              </button>
-            </div>
-          </div>
-
-          <div className="flex flex-col items-end ml-auto space-y-2">
-            <button className="bg-gray-700 text-white border-2 border-green-500 px-4 py-2 rounded flex items-center space-x-2">
-              <span>Move to Wishlist</span>
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-              </svg>
-            </button>
-            <button className="bg-gray-700 text-white border-2 border-red-500 px-4 py-2 rounded flex items-center space-x-2">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-              <span>Delete</span>
-            </button>
-          </div>
-        </div>
-
-        <div className="flex items-start space-x-4 border-2 border-white p-4 rounded-lg bg-gray-800">
-          <img src={cardImage} alt="Card" className="w-32 h-32 object-cover rounded-lg" />
-          
-          <div className="flex flex-col justify-between ml-4 space-y-2">
-            <div className="text-white text-xl">Card</div>
-            <div className="flex flex-col">
-              <div className="text-white text-xl">Table Tap Game</div>
-              <div className="flex items-center space-x-2 mt-2">
-                <span className="text-white text-xl">13+</span>
-                <span className="text-white text-xl">199</span>
-                <span className="text-white text-xl">Birr</span>
-              </div>
-            </div>
-            <div className="flex items-center space-x-2 mt-4">
-              <button
-                onClick={() => decreaseQuantity(setQuantityCard)}
-                className="bg-gray-700 text-white px-2 py-1 rounded"
-              >
-                -
-              </button>
-              <span className="text-white text-xl">{quantityCard}</span>
-              <button
-                onClick={() => increaseQuantity(setQuantityCard)}
-                className="bg-gray-700 text-white px-2 py-1 rounded"
-              >
-                +
-              </button>
-            </div>
-          </div>
-
-          <div className="flex flex-col items-end ml-auto space-y-2">
-            <button className="bg-gray-700 text-white border-2 border-green-500 px-4 py-2 rounded flex items-center space-x-2">
-              <span>Move to Wishlist</span>
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-              </svg>
-            </button>
-            <button className="bg-gray-700 text-white border-2 border-red-500 px-4 py-2 rounded flex items-center space-x-2">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-              <span>Delete</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Larger container */}
-      <div className="w-2/2 bg-gray-700 p-4 rounded-lg">
-        <div className="text-white text-xl mb-4">Order summery</div>
-        <p className="text-white">This container is larger and placed beside the three items with some space in between.</p>
-        {/* Add additional content here as needed */}
-      </div>
+      )}
     </div>
   );
-}
+};
 
 export default Cart;

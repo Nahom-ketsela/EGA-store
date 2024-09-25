@@ -119,7 +119,7 @@ const FilterSection = () => {
                     Apply Filters
                 </button>
             </div>
-
+            <hr className="border-white my-4" />
             {/* Applied Filters */}
             <div className="flex flex-wrap space-x-2 space-y-2 mb-4">
                 {appliedFilters.map((filter, index) => (
